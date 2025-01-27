@@ -7,7 +7,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
@@ -25,7 +24,7 @@ public class Reserva {
     @NotBlank(message = "La hora no puede estar en blanco.")
     private Long hora;
     @NotBlank(message = "El número de personas no puede estar en blanco.")
-    private Long NumPersonas;
+    private Long numPersonas;
     //cliente y mesa
     @ManyToOne
     @JoinColumn(name = "cliente_id", nullable = false)

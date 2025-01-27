@@ -16,8 +16,8 @@ public class Mesa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long NumeroMesa;
-    private String Descripcion;
+    private Long numeroMesa;
+    private String descripcion;
 
     @OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL)
     private List<Reserva> reservas;

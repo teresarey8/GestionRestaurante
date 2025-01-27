@@ -1,6 +1,5 @@
 package org.example.gestionrestaurante.Controller;
 
-import org.apache.coyote.Response;
 import org.example.gestionrestaurante.Entity.Mesa;
 import org.example.gestionrestaurante.Entity.Reserva;
 import org.example.gestionrestaurante.Repository.MesaRepository;
