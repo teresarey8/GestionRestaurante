@@ -81,7 +81,7 @@ public class ReservaController {
         }
     }
     /**
-     * AHORA LAS RELACIONES, QUE TENEMOS DOS, MESA Y CLIENTE
+     * AHORA LAS RELACIONES, QUE TENEMOS DOS, MESA Y CLIENTE.
      */
 
 
