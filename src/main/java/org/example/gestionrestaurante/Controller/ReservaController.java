@@ -36,33 +36,9 @@ public class ReservaController {
      * insertamos una reserva nueva, viendo la disponiblidad de mesas
      */
     @PostMapping("/reservas")//y lo cogemos del body los datos necesarios
-    public ResponseEntity<List<Reserva>> insertReservas(@RequestBody List<Reserva> reservas) {
-        // Lista de reservas que fueron exitosas
-        List<Reserva> reservasCreadas = new ArrayList<>();
+    public ResponseEntity<Reserva> insertReservas(@RequestBody Reserva reserva) {
 
-        for (Reserva reserva : reservas) {
-            // Verificamos si hay mesas disponibles para la fecha, hora y número de personas
-            List<Mesa> mesasDisponibles = mesaRepository.findMesasDisponibles(reserva.getFecha(), reserva.getHora(), reserva.getNumPersonas());
-
-            if (mesasDisponibles.isEmpty()) {
-                // Si no hay mesas disponibles, retornamos un mensaje de error para esta reserva
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-            }
-
-            // Si hay mesas disponibles, asignamos una mesa a la reserva
-            Mesa mesaAsignada = mesasDisponibles.get(0);
-
-            // Guardamos la reserva en la base de datos
-            Reserva nuevaReserva = reservaRepository.save(reserva);
-
-            // Asignamos la reserva a la mesa (agregamos la reserva a la lista de reservas de la mesa)
-            mesaAsignada.getReservas().add(nuevaReserva);
-            mesaRepository.save(mesaAsignada); // Actualizamos la mesa con la nueva reserva
-
-            // Añadimos la reserva a la lista de reservas creadas
-            reservasCreadas.add(nuevaReserva);
-        }
-        return ResponseEntity.status(HttpStatus.CREATED).body(reservasCreadas);
+            
     }
     /**
      * obtenemos una reserva especifica

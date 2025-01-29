@@ -1,5 +1,7 @@
 package org.example.gestionrestaurante.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,5 +22,6 @@ public class Mesa {
     private String descripcion;
 
     @OneToMany(mappedBy = "mesa", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Reserva> reservas;
 }

@@ -1,8 +1,11 @@
 package org.example.gestionrestaurante.Entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,11 +22,11 @@ public class Reserva {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @FutureOrPresent(message = "La fecha no puede ser anterior al día de hoy.")
-    @NotBlank(message = "La fecha de la reserva no puede estar en blanco.")
+    @NotNull(message = "La fecha de la reserva no puede estar en blanco.")
     private LocalDate fecha;
-    @NotBlank(message = "La hora no puede estar en blanco.")
+    @NotNull(message = "La hora no puede estar en blanco.")
     private Long hora;
-    @NotBlank(message = "El número de personas no puede estar en blanco.")
+    @NotNull(message = "El número de personas no puede estar en blanco.")
     private Long numPersonas;
     //cliente y mesa
     @ManyToOne
@@ -33,5 +36,6 @@ public class Reserva {
     @ManyToOne
     @JoinColumn(name = "mesa_id", nullable = false)
     private Mesa mesa;
+
 
 }
