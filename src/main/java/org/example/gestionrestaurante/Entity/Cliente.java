@@ -3,10 +3,7 @@ package org.example.gestionrestaurante.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,8 +25,10 @@ public class Cliente {
     @NotBlank(message = "Los apellidos no pueden estar en blanco")
     private String apellidos;
     @NotNull
+    @Column(unique = true)
     private Long telefono;
-
+    @Email(message = "Debe proporcionar un email válido")
+    private String email;
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Reserva> reservas;

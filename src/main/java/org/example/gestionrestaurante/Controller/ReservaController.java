@@ -35,11 +35,28 @@ public class ReservaController {
     /**
      * insertamos una reserva nueva, viendo la disponiblidad de mesas
      */
-    @PostMapping("/reservas")//y lo cogemos del body los datos necesarios
-    public ResponseEntity<Reserva> insertReservas(@RequestBody Reserva reserva) {
+    @PostMapping("/reservas")
+    public ResponseEntity<?> reservarMesa(@RequestBody Reserva reserva) {
+        //por si no añaden bien la mesa o si no existe
+        if (reserva.getMesa() == null || reserva.getMesa().getId() == null) {
+            return ResponseEntity.badRequest().body("Debe seleccionar una mesa válida.");
+        }
+        //Llamamos al metodo del repositorio para comprobar si la mesa ya está reservada en esa fecha y hora y le enviamos los datos para que lo compruebe
+        boolean ocupada = mesaRepository.existsReservaByMesaAndFechaAndHora(
+                reserva.getMesa().getId(),
+                reserva.getFecha(),
+                reserva.getHora()
+        );
 
-            
+        if (ocupada) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("La mesa ya está ocupada en ese horario.");
+        }
+
+        Reserva nuevaReserva = reservaRepository.save(reserva);
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
     }
+
+
     /**
      * obtenemos una reserva especifica
      */

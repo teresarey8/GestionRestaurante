@@ -63,6 +63,7 @@ public class ClienteController {
                     cliente.setNombre(NuevoCliente.getNombre());
                     cliente.setApellidos(NuevoCliente.getApellidos());
                     cliente.setTelefono(NuevoCliente.getTelefono());
+                    cliente.setEmail(NuevoCliente.getEmail());
                     return ResponseEntity.ok(clienteRepository.save(cliente));
                 })
                 .orElseGet(() -> {
