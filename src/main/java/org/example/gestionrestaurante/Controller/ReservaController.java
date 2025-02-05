@@ -6,6 +6,9 @@ import org.example.gestionrestaurante.Repository.ClienteRepository;
 import org.example.gestionrestaurante.Repository.MesaRepository;
 import org.example.gestionrestaurante.Repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,10 +31,20 @@ public class ReservaController {
      * Obtengo todas las reservas formato json
      */
     @GetMapping("/reservas")
-    public ResponseEntity <List<Reserva>> getListReservas(){
-        var reservas = reservaRepository.findAll();
+    public ResponseEntity<Page<Reserva>> getListReservas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);//Crea un objeto Pageable con los parámetros page y size, que se pasan al método findAll del repositorio.
+        Page<Reserva> reservas = reservaRepository.findAll(pageable);
         return ResponseEntity.ok(reservas);
+        /*
+        * En esta respuesta:
+        content: Contiene los elementos de la página solicitada.
+        totalPages: Total de páginas disponibles.
+        totalElements: Total de elementos en la base de datos.
+        numberOfElements: Número de elementos en la página actual.*/
     }
+
     /**
      * insertamos una reserva nueva, viendo la disponiblidad de mesas
      */

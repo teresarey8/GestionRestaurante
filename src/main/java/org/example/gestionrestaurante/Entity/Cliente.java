@@ -25,8 +25,9 @@ public class Cliente {
     @NotBlank(message = "Los apellidos no pueden estar en blanco")
     private String apellidos;
     @NotNull
-    @Column(unique = true)
     private Long telefono;
+    @Column(unique = true, nullable = false)
+    @NotNull(message = "El email no puede estar en blanco.")
     @Email(message = "Debe proporcionar un email válido")
     private String email;
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)

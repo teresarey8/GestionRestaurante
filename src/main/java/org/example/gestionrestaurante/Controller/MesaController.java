@@ -5,6 +5,9 @@ import org.example.gestionrestaurante.Entity.Reserva;
 import org.example.gestionrestaurante.Repository.MesaRepository;
 import org.example.gestionrestaurante.Repository.ReservaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,13 +23,23 @@ public class MesaController {
     @Autowired
     private ReservaRepository reservaRepository;
     /**
-     * Obtenemos todas las mesas de nuestro restaurante en json
+     * Obtenemos todas las mesas de nuestro restaurante en json con paginacion
      */
     @GetMapping("/mesas")
-    public ResponseEntity<List<Mesa>> getAllMesas() {
-        var mesas = mesaRepository.findAll();
+    public ResponseEntity<Page<Mesa>> getAllMesas(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Mesa> mesas = mesaRepository.findAll(pageable);
         return ResponseEntity.ok(mesas);
+         /*
+        * En esta respuesta:
+        content: Contiene los elementos de la página solicitada.
+        totalPages: Total de páginas disponibles.
+        totalElements: Total de elementos en la base de datos.
+        numberOfElements: Número de elementos en la página actual.*/
     }
+
     /**
      *Insertamos una mesa
      */

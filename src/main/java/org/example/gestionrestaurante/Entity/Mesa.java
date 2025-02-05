@@ -18,6 +18,7 @@ public class Mesa {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private Long numeroMesa;
     private String descripcion;
 
