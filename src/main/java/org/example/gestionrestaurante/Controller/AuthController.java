@@ -1,10 +1,13 @@
 package org.example.gestionrestaurante.Controller;
 
+import jakarta.annotation.PostConstruct;
 import org.example.gestionrestaurante.Config.JwtTokenProvider;
 import org.example.gestionrestaurante.DTO.LoginRequestDTO;
 import org.example.gestionrestaurante.DTO.LoginResponseDTO;
 import org.example.gestionrestaurante.DTO.UserRegisterDTO;
+import org.example.gestionrestaurante.Entity.Rol;
 import org.example.gestionrestaurante.Entity.UserEntity;
+import org.example.gestionrestaurante.Repository.RolRepository;
 import org.example.gestionrestaurante.Repository.UserEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +20,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 public class AuthController {
@@ -31,6 +33,28 @@ public class AuthController {
     private JwtTokenProvider tokenProvider;
     @Autowired
     private AuthenticationManager authenticationManager;
+    @Autowired
+    RolRepository rolRepository;
+
+    // Esta anotación indica que este método se ejecutará después de que se haya inicializado el bean
+    @PostConstruct
+    public void init() {
+        //Verifica si no hay roles en la base de datos, asi no se crean cada vez que la app se enciende
+        if (rolRepository.count() == 0) {
+            // Si no existen roles, los creamos
+            Rol rolAdmin = new Rol();
+            rolAdmin.setNombre("ROLE_ADMIN");
+
+            Rol rolUser = new Rol();
+            rolUser.setNombre("ROLE_USER");
+
+            // Guardamos los roles en la base de datos
+            rolRepository.save(rolAdmin);
+            rolRepository.save(rolUser);
+
+            System.out.println("Roles creados: " + rolAdmin.getNombre() + ", " + rolUser.getNombre());
+        }
+    }
 
     //me viene un usuario y lo tengo que guardar en la base de datos
     //transformo el userdto a userentity, para cuando queremos neviar o recibir que no coinciden exactamente con los detalles de la entidad
@@ -40,18 +64,30 @@ public class AuthController {
     //cuadno se registra lo convertimos a entity y lo creamos y guardamos pq hay cosas que no queremos que ponga o q vea q en la entidad si está.
     @PostMapping("/auth/register")
     public ResponseEntity<UserEntity> save(@RequestBody UserRegisterDTO userDTO) {
-        UserEntity userEntity = this.userRepository.save(
-                UserEntity.builder()
-                        .username(userDTO.getUsername())
-                        .password(passwordEncoder.encode(userDTO.getPassword()))
-                        .email(userDTO.getEmail())
-                        .authorities(List.of("ROLE_USER", "ROLE_ADMIN"))
-                        .build());
-        //y te devuelve todo lo que hemos creado, se puede cambiar y poner arriba ? y que devuelva lo que quiera.
-        return ResponseEntity.status(HttpStatus.CREATED).body(userEntity);
-        //try catch para capturar excepciones
+        // Validamos que el rol no sea nulo ni vacío
+        if (userDTO.getRoles() == null || userDTO.getRoles().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
 
+        // Buscamos el rol en la base de datos
+        Rol rol = rolRepository.findByNombre(userDTO.getRoles())
+                .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + userDTO.getRoles()));
+
+        // Crear usuario con el rol asignado
+        UserEntity userEntity = UserEntity.builder()
+                .username(userDTO.getUsername())
+                .password(passwordEncoder.encode(userDTO.getPassword()))
+                .email(userDTO.getEmail())
+                .roles(Set.of(rol)) // Asignamos el único rol
+                .build();
+
+        userRepository.save(userEntity);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(userEntity);
     }
+
+
+
     //recibe un objeto;usuario y password
     @PostMapping("/auth/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginDTO) {

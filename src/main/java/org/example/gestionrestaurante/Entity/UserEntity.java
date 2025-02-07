@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,7 +29,15 @@ public class UserEntity implements UserDetails {
     @Column(unique = true)
     private String username;
     private String password;
-
+    //para relacionarlo con los roles correspondientes
+    @ManyToMany(fetch = FetchType.EAGER)//EAGER (ansioso) carga los roles inmediatamente cuando se obtiene el usuario.
+    //Dado que una relación muchos a muchos requiere una tabla intermedia, esta anotación configura cómo se creará esa tabla
+    @JoinTable(
+            name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private Set<Rol> roles;
 
     @Builder.Default    //Para que Lombok con el patrón builder cree el ArrayList
     @ElementCollection(fetch = FetchType.EAGER)
