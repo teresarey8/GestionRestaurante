@@ -73,7 +73,7 @@ public class AuthController {
         Rol rol = rolRepository.findByNombre(userDTO.getRoles())
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + userDTO.getRoles()));
 
-        // Crear usuario con el rol asignado
+        // Crear usuario con todo
         UserEntity userEntity = UserEntity.builder()
                 .username(userDTO.getUsername())
                 .password(passwordEncoder.encode(userDTO.getPassword()))

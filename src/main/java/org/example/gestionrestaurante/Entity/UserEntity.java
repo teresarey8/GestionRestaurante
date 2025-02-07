@@ -39,17 +39,17 @@ public class UserEntity implements UserDetails {
     )
     private Set<Rol> roles;
 
-    @Builder.Default    //Para que Lombok con el patrón builder cree el ArrayList
-    @ElementCollection(fetch = FetchType.EAGER)
-    // Indica que esta lista se almacena en una tabla separada, pero sin una relación
-    //@Enumerated(EnumType.STRING)
-    @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
-    private List<String> authorities = new ArrayList<>();
+//    @Builder.Default    //Para que Lombok con el patrón builder cree el ArrayList
+//    @ElementCollection(fetch = FetchType.EAGER)
+//    // Indica que esta lista se almacena en una tabla separada, pero sin una relación
+//    //@Enumerated(EnumType.STRING)
+//    @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
+//    private List<String> authorities = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.authorities.stream()
-                .map(authority -> new SimpleGrantedAuthority(authority))
+        return this.roles.stream()
+                .map(rol -> new SimpleGrantedAuthority(rol.getNombre()))
                 .toList();
     }
 
