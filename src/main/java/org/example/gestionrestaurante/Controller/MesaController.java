@@ -22,32 +22,25 @@ public class MesaController {
     private MesaRepository mesaRepository;
     @Autowired
     private ReservaRepository reservaRepository;
+
     /**
      * Obtenemos todas las mesas de nuestro restaurante en json con paginacion
      */
     @GetMapping("/mesas")
-    public ResponseEntity<Page<Mesa>> getAllMesas(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Mesa> mesas = mesaRepository.findAll(pageable);
+    public ResponseEntity<List<Mesa>> getAllMesas() {
+        var mesas = mesaRepository.findAll();
         return ResponseEntity.ok(mesas);
-         /*
-        * En esta respuesta:
-        content: Contiene los elementos de la página solicitada.
-        totalPages: Total de páginas disponibles.
-        totalElements: Total de elementos en la base de datos.
-        numberOfElements: Número de elementos en la página actual.*/
     }
 
     /**
-     *Insertamos una mesa
+     * Insertamos una mesa
      */
     @PostMapping("/mesas")
     public ResponseEntity<Mesa> addMesa(@RequestBody Mesa mesa) {
         var mesas = mesaRepository.save(mesa);
         return ResponseEntity.status(HttpStatus.CREATED).body(mesas);
     }
+
     /**
      * Obtenemos los datos de una mesa en concreto
      */
@@ -57,21 +50,23 @@ public class MesaController {
                 .map(mesa -> ResponseEntity.ok().body(mesa))
                 .orElse(ResponseEntity.notFound().build());
     }
+
     /**
      * Modificamos una mesa
      */
     @PutMapping("/mesas/{id}")
     public ResponseEntity<Mesa> editMesa(@PathVariable Long id, @RequestBody Mesa nuevaMesa) {
         return mesaRepository.findById(id)
-                .map(mesa->{
+                .map(mesa -> {
                     mesa.setNumeroMesa(nuevaMesa.getNumeroMesa());
                     mesa.setDescripcion(nuevaMesa.getDescripcion());
                     return ResponseEntity.ok(mesaRepository.save(mesa));
                 })
-                .orElseGet(()->{
+                .orElseGet(() -> {
                     return ResponseEntity.notFound().build();
                 });
     }
+
     /**
      * eliminamos una mesita
      */
@@ -81,10 +76,11 @@ public class MesaController {
         if (mesa.isPresent()) {
             mesaRepository.delete(mesa.get());
             return ResponseEntity.noContent().build();
-        }else{
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
+
     //ahora añadimos las mesas a las reservas que correspondan
     @PostMapping("/mesas/{id}/reservas")
     public ResponseEntity<Mesa> insertReservas(@PathVariable Long id, @RequestBody Reserva reserva) {
@@ -97,6 +93,7 @@ public class MesaController {
         }
         return ResponseEntity.notFound().build();
     }
+
     //ahora podré borrar la mesa x de la reserva x
     @DeleteMapping("/mesas/{idMesa}/reservas/{idReserva}")
     public ResponseEntity<Mesa> deleteReservas(@PathVariable Long idMesa, @PathVariable Long idReserva) {
@@ -104,18 +101,19 @@ public class MesaController {
         Optional<Reserva> reserva = reservaRepository.findById(idReserva);
         if (mesa.isPresent() && reserva.isPresent()) {
             mesa.get().getReservas().remove(reserva.get());
-            return  ResponseEntity.ok(mesa.get());
-        }else{
+            return ResponseEntity.ok(mesa.get());
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
+
     //Ahora obtendremos las reservas de cada mesa
     @GetMapping("/mesas/{id}/reservas")
     public ResponseEntity<List<Reserva>> getAllReservas(@PathVariable Long id) {
         Optional<Mesa> mesa = mesaRepository.findById(id);
         if (mesa.isPresent() && mesa.get().getReservas().size() > 0) {
             return ResponseEntity.ok(mesa.get().getReservas());
-        }else{
+        } else {
             return ResponseEntity.notFound().build();
         }
     }

@@ -15,13 +15,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @RestController
 public class AuthController {
@@ -35,6 +37,8 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     @Autowired
     RolRepository rolRepository;
+    @Autowired
+    private UserEntityRepository userEntityRepository;
 
     // Esta anotación indica que este método se ejecutará después de que se haya inicializado el bean
     @PostConstruct
