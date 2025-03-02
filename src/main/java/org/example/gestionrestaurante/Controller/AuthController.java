@@ -5,6 +5,7 @@ import org.example.gestionrestaurante.Config.JwtTokenProvider;
 import org.example.gestionrestaurante.DTO.LoginRequestDTO;
 import org.example.gestionrestaurante.DTO.LoginResponseDTO;
 import org.example.gestionrestaurante.DTO.UserRegisterDTO;
+import org.example.gestionrestaurante.Entity.Cliente;
 import org.example.gestionrestaurante.Entity.Rol;
 import org.example.gestionrestaurante.Entity.UserEntity;
 import org.example.gestionrestaurante.Repository.RolRepository;
@@ -68,7 +69,6 @@ public class AuthController {
     //cuadno se registra lo convertimos a entity y lo creamos y guardamos pq hay cosas que no queremos que ponga o q vea q en la entidad si está.
     @PostMapping("/auth/register")
     public ResponseEntity<UserEntity> save(@RequestBody UserRegisterDTO userDTO) {
-        // Validamos que el rol no sea nulo ni vacío
         if (userDTO.getRoles() == null || userDTO.getRoles().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
@@ -77,18 +77,31 @@ public class AuthController {
         Rol rol = rolRepository.findByNombre(userDTO.getRoles())
                 .orElseThrow(() -> new RuntimeException("Rol no encontrado: " + userDTO.getRoles()));
 
-        // Crear usuario con todo
+        // Crear el usuario
         UserEntity userEntity = UserEntity.builder()
                 .username(userDTO.getUsername())
                 .password(passwordEncoder.encode(userDTO.getPassword()))
                 .email(userDTO.getEmail())
-                .roles(Set.of(rol)) // Asignamos el único rol
+                .roles(Set.of(rol))
                 .build();
 
+        // Crear el cliente y asociarlo al usuario
+        Cliente cliente = Cliente.builder()
+                .nombre(userDTO.getNombre())
+                .apellidos(userDTO.getApellidos())
+                .email(userDTO.getEmail())
+                .telefono(userDTO.getTelefono())
+                .user(userEntity) // Relación con el usuario
+                .build();
+
+        userEntity.setCliente(cliente); // Relación bidireccional
+
+        // Guardar usuario (gracias a CascadeType.ALL también se guardará el cliente)
         userRepository.save(userEntity);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userEntity);
     }
+
 
 
 

@@ -21,5 +21,5 @@ public class UserRegisterDTO {
     private String roles;
     private String nombre;
     private String apellidos;
-    private String telefono;
+    private Long telefono;
 }

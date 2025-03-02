@@ -42,18 +42,6 @@ public class ClienteController {
     /**
      * Insertamos un cliente con los datos que recibe del body en formato json
      */
-    @PostMapping("/clientes")
-    public ResponseEntity<Cliente> insertCliente(@RequestBody Cliente UserRegisterDTO) {
-        //aqui creamos una reserva de verdad, basandonos en el dto
-        Cliente cliente = Cliente.builder()
-                .nombre(UserRegisterDTO.getNombre())
-                .apellidos(UserRegisterDTO.getApellidos())
-                .email(UserRegisterDTO.getEmail())
-                .telefono(UserRegisterDTO.getTelefono())
-                .build();
-        Cliente nuevoCliente = clienteRepository.save(cliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(nuevoCliente);
-    }
     /**
      * Obtenemos un cliente en concreto por su id
      */

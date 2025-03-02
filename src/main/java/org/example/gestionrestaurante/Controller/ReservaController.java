@@ -1,17 +1,21 @@
 package org.example.gestionrestaurante.Controller;
 
+import org.example.gestionrestaurante.Config.JwtTokenProvider;
 import org.example.gestionrestaurante.Entity.Mesa;
 import org.example.gestionrestaurante.Entity.Reserva;
 import org.example.gestionrestaurante.Entity.UserEntity;
 import org.example.gestionrestaurante.Repository.ClienteRepository;
 import org.example.gestionrestaurante.Repository.MesaRepository;
 import org.example.gestionrestaurante.Repository.ReservaRepository;
+import org.example.gestionrestaurante.Repository.UserEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,24 +32,31 @@ public class ReservaController {
     private ClienteRepository clienteRepository;
     @Autowired
     private MesaRepository mesaRepository;
-
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private UserEntityRepository userEntityRepository;
     /**
      * Obtengo todas las reservas formato json
      */
     @GetMapping("/reservas")
-    public ResponseEntity<Page<Reserva>> getListReservas(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);//Crea un objeto Pageable con los parámetros page y size, que se pasan al método findAll del repositorio.
-        Page<Reserva> reservas = reservaRepository.findAll(pageable);
+    public ResponseEntity<List<Reserva>> obtenerMisReservas(Authentication authentication) {
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        String username = authentication.getName(); // Obtiene el username desde el token
+
+        // Buscar el usuario en la base de datos
+        UserEntity user = userEntityRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        // Buscar las reservas del cliente asociado al usuario
+        List<Reserva> reservas = reservaRepository.findByCliente_User(user);
+
         return ResponseEntity.ok(reservas);
-        /*
-        * En esta respuesta:
-        content: Contiene los elementos de la página solicitada.
-        totalPages: Total de páginas disponibles.
-        totalElements: Total de elementos en la base de datos.
-        numberOfElements: Número de elementos en la página actual.*/
     }
+
+
 
     /**
      * insertamos una reserva nueva, viendo la disponiblidad de mesas

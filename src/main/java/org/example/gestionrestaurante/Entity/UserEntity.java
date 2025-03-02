@@ -38,13 +38,9 @@ public class UserEntity implements UserDetails {
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Rol> roles;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Cliente cliente;
 
-//    @Builder.Default    //Para que Lombok con el patrón builder cree el ArrayList
-//    @ElementCollection(fetch = FetchType.EAGER)
-//    // Indica que esta lista se almacena en una tabla separada, pero sin una relación
-//    //@Enumerated(EnumType.STRING)
-//    @CollectionTable(name = "user_authorities", joinColumns = @JoinColumn(name = "user_id"))
-//    private List<String> authorities = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

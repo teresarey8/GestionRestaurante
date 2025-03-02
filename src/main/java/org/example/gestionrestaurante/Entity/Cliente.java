@@ -1,6 +1,7 @@
 package org.example.gestionrestaurante.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -17,6 +18,8 @@ import java.util.List;
 @Table(name="clientes")
 @Entity
 @Builder
+//lo pongo porque si no se hacia bucle en la respuesta de las reservas
+@JsonIgnoreProperties({"user", "roles"})
 public class Cliente {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,5 +38,11 @@ public class Cliente {
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<Reserva> reservas;
+    @OneToOne
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    private UserEntity user;
+    private String username;
+
+
 
 }
