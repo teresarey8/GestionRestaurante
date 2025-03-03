@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,16 @@ public class MesaController {
         var mesas = mesaRepository.findAll();
         return ResponseEntity.ok(mesas);
     }
+    //la creo nueva para ver las mesas disponibles.
+    @GetMapping("/mesas/disponibles")
+    public ResponseEntity<List<Mesa>> getMesasDisponibles(
+            @RequestParam String fecha,
+            @RequestParam Long hora) {
 
+        LocalDate fechaReserva = LocalDate.parse(fecha);
+        List<Mesa> mesasDisponibles = mesaRepository.findMesasDisponibles(fechaReserva, hora);
+        return ResponseEntity.ok(mesasDisponibles);
+    }
     /**
      * Insertamos una mesa
      */

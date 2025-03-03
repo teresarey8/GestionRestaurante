@@ -28,6 +28,7 @@ public class Reserva {
     @NotNull(message = "La fecha de la reserva no puede estar en blanco.")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fecha;
+
     @NotNull(message = "La hora no puede estar en blanco.")
     private Long hora;
     @NotNull(message = "El número de personas no puede estar en blanco.")

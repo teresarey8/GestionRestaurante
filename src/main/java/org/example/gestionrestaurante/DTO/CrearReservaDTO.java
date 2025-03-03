@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class CrearReservaDTO {
     @FutureOrPresent(message = "La fecha no puede ser anterior al día de hoy.")
     @NotNull(message = "La fecha de la reserva no puede estar en blanco.")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate fecha;
     @NotNull(message = "La hora no puede estar en blanco.")
     private Long hora;

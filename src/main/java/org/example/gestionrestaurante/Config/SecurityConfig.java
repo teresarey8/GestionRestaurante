@@ -46,8 +46,8 @@ public class SecurityConfig {
                         //para poder ver el swagger
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**").permitAll()
                         //para los permisos de los roles de usuarios
-                        .requestMatchers("/clientes/**", "/mesas/**").hasRole("ADMIN")
-                        .requestMatchers("/reservas/**").authenticated()
+                        .requestMatchers("/clientes/**").hasRole("ADMIN")
+                        .requestMatchers("/reservas/**", "/mesas/**").authenticated()
                         .anyRequest().permitAll()
                 );
 
