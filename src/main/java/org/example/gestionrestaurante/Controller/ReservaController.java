@@ -1,6 +1,7 @@
 package org.example.gestionrestaurante.Controller;
 
 import org.example.gestionrestaurante.Config.JwtTokenProvider;
+import org.example.gestionrestaurante.Entity.Cliente;
 import org.example.gestionrestaurante.Entity.Mesa;
 import org.example.gestionrestaurante.Entity.Reserva;
 import org.example.gestionrestaurante.Entity.UserEntity;
@@ -61,34 +62,58 @@ public class ReservaController {
     /**
      * insertamos una reserva nueva, viendo la disponiblidad de mesas
      */
-        @PostMapping("/reservas")
-        public ResponseEntity<?> reservarMesa(@RequestBody Reserva CrearReservaDTO) {
-            //por si no añaden bien la mesa o si no existe
-            if (CrearReservaDTO.getMesa() == null || CrearReservaDTO.getMesa().getId() == null) {
-                return ResponseEntity.badRequest().body("Debe seleccionar una mesa válida.");
-            }
-            //Llamamos al metodo del repositorio para comprobar si la mesa ya está reservada en esa fecha y hora y le enviamos los datos para que lo compruebe
-            boolean ocupada = mesaRepository.existsReservaByMesaAndFechaAndHora(
-                    CrearReservaDTO.getMesa().getId(),
-                    CrearReservaDTO.getFecha(),
-                    CrearReservaDTO.getHora()
-            );
-
-            if (ocupada) {
-                return ResponseEntity.status(HttpStatus.CONFLICT).body("La mesa ya está ocupada en ese horario.");
-            }
-            //aqui creamos una reserva de verdad, basandonos en el dto
-            Reserva reserva = Reserva.builder()
-                    .fecha(CrearReservaDTO.getFecha())
-                    .mesa(CrearReservaDTO.getMesa())
-                    .hora(CrearReservaDTO.getHora())
-                    .cliente(CrearReservaDTO.getCliente())
-                    .numPersonas(CrearReservaDTO.getNumPersonas())
-                    .build();
-
-            Reserva nuevaReserva = reservaRepository.save(reserva);
-            return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
+    @PostMapping("/reservas")
+    public ResponseEntity<?> reservarMesa(@RequestBody Reserva crearReservaDTO, Authentication authentication) {
+        // Verificar si el usuario está autenticado
+        if (authentication == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuario no autenticado.");
         }
+
+        String username = authentication.getName(); // Obtener el username desde el token
+
+        // Buscar el usuario en la base de datos
+        UserEntity user = userEntityRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        // Obtener el cliente asociado al usuario
+        Cliente cliente = user.getCliente();
+
+        if (cliente == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cliente no encontrado.");
+        }
+
+        // Verificar si la mesa es válida
+        if (crearReservaDTO.getMesa() == null || crearReservaDTO.getMesa().getId() == null) {
+            return ResponseEntity.badRequest().body("Debe seleccionar una mesa válida.");
+        }
+
+        // Comprobar si la mesa ya está reservada en esa fecha y hora
+        boolean ocupada = mesaRepository.existsReservaByMesaAndFechaAndHora(
+                crearReservaDTO.getMesa().getId(),
+                crearReservaDTO.getFecha(),
+                crearReservaDTO.getHora()
+        );
+
+        if (ocupada) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("La mesa ya está ocupada en ese horario.");
+        }
+
+        // Crear la reserva con el cliente autenticado ya rellenado solo
+        Reserva reserva = Reserva.builder()
+                .fecha(crearReservaDTO.getFecha())
+                .mesa(crearReservaDTO.getMesa())
+                .hora(crearReservaDTO.getHora())
+                .cliente(cliente) // Aquí asignamos el cliente autenticado
+                .numPersonas(crearReservaDTO.getNumPersonas())
+                .build();
+
+        // Guardar la reserva en la base de datos
+        Reserva nuevaReserva = reservaRepository.save(reserva);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(nuevaReserva);
+    }
+
+
 
     /**
      * obtenemos una reserva especifica
