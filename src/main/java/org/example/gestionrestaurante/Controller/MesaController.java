@@ -34,9 +34,7 @@ public class MesaController {
     }
     //la creo nueva para ver las mesas disponibles.
     @GetMapping("/mesas/disponibles")
-    public ResponseEntity<List<Mesa>> getMesasDisponibles(
-            @RequestParam String fecha,
-            @RequestParam Long hora) {
+    public ResponseEntity<List<Mesa>> getMesasDisponibles(@RequestParam String fecha, @RequestParam Long hora) {
 
         LocalDate fechaReserva = LocalDate.parse(fecha);
         List<Mesa> mesasDisponibles = mesaRepository.findMesasDisponibles(fechaReserva, hora);

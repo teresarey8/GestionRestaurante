@@ -30,11 +30,7 @@ public class ReservaController {
     @Autowired
     private ReservaRepository reservaRepository;
     @Autowired
-    private ClienteRepository clienteRepository;
-    @Autowired
     private MesaRepository mesaRepository;
-    @Autowired
-    private JwtTokenProvider jwtTokenProvider;
     @Autowired
     private UserEntityRepository userEntityRepository;
     /**

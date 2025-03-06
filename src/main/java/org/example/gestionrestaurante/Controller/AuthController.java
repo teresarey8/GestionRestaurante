@@ -110,7 +110,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody LoginRequestDTO loginDTO) {
         try {
 
-            //Validamos al usuario en Spring (hacemos login manualmente)
+            //Validamos al usuario 
             UsernamePasswordAuthenticationToken userPassAuthToken = new UsernamePasswordAuthenticationToken(loginDTO.getUsername(), loginDTO.getPassword());
             Authentication auth = authenticationManager.authenticate(userPassAuthToken);    //valida el usuario y devuelve un objeto Authentication con sus datos
             //Obtenemos el UserEntity del usuario logueado
