@@ -41,7 +41,7 @@ public class ReservaController {
         if (authentication == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
-        String username = authentication.getName(); // Obtiene el username desde el token
+        String username = authentication.get // Obtiene el username desde el token
 
         // Buscar el usuario en la base de datos
         UserEntity user = userEntityRepository.findByUsername(username)
@@ -55,9 +55,9 @@ public class ReservaController {
 
 
 
-    /**
-     * insertamos una reserva nueva, viendo la disponiblidad de mesas
-     */
+        /**
+         * insertamos una reserva nueva, viendo la disponiblidad de mesas
+         */
     @PostMapping("/reservas")
     public ResponseEntity<?> reservarMesa(@RequestBody Reserva crearReservaDTO, Authentication authentication) {
         // Verificar si el usuario está autenticado

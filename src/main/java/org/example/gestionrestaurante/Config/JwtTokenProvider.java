@@ -1,4 +1,4 @@
-package org.example.gestionrestaurante.Config;
+<package org.example.gestionrestaurante.Config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtParser;

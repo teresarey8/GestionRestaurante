@@ -27,7 +27,7 @@ public class UserEntity implements UserDetails {
     @Column(unique = true)
     private String email;
     @Column(unique = true)
-    private String username;
+
     private String password;
     //para relacionarlo con los roles correspondientes
     @ManyToMany(fetch = FetchType.EAGER)//EAGER (ansioso) carga los roles inmediatamente cuando se obtiene el usuario.

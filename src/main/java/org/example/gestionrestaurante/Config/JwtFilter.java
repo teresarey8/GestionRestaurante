@@ -1,4 +1,4 @@
-package org.example.gestionrestaurante.Config;
+package com.example.TaskSync.Config;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
